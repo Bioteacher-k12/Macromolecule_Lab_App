@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Macromolecules Interactive Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom Animations and Styling */
+        body { font-family: 'Inter', sans-serif; background-color: #f0fdf4; }
+        
+        /* Atom Base Styles */
+        .atom {
+            width: 2.5rem; height: 2.5rem; border-radius: 9999px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); user-select: none;
+        }
+        .atom-C { background-color: #374151; color: white; } /* Carbon = Dark Gray */
+        .atom-H { background-color: #f3f4f6; color: #1f2937; border: 2px solid #d1d5db; } /* Hydrogen = White/Light Gray */
+        .atom-O { background-color: #ef4444; color: white; } /* Oxygen = Red */
+        .atom-N { background-color: #3b82f6; color: white; } /* Nitrogen = Blue */
+        
+        /* Highlight state when clicked */
+        .atom.highlighted {
+            box-shadow: 0 0 0 4px #fbbf24, 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: scale(1.15);
+            z-index: 10;
+        }
+
+        /* Chemical Bond lines */
+        .bond-h { height: 4px; background-color: #9ca3af; width: 1.5rem; }
+        .bond-v { width: 4px; background-color: #9ca3af; height: 1.5rem; margin: 0 auto; }
+        .bond-h-double { height: 8px; border-top: 3px solid #9ca3af; border-bottom: 3px solid #9ca3af; width: 1.5rem; background: transparent; }
+        .bond-v-double { width: 8px; border-left: 3px solid #9ca3af; border-right: 3px solid #9ca3af; height: 1.5rem; background: transparent; margin: 0 auto; }
+
+        /* Draggable elements */
+        .draggable { touch-action: none; cursor: grab; z-index: 50; }
+        .draggable:active { cursor: grabbing; }
+
+        /* Floating Animation for Water Release */
+        @keyframes floatAway {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(0, -50px) scale(1.5); opacity: 0; }
+        }
+        .animate-float-away { animation: floatAway 1.5s ease-out forwards; }
+
+        /* Lock overlay */
+        .locked { opacity: 0.5; pointer-events: none; filter: grayscale(80%); transition: all 0.5s; }
+        .unlocked { opacity: 1; pointer-events: auto; filter: grayscale(0%); }
+    </style>
+</head>
+<body class="text-gray-800 pb-20">
+
+    <!-- Header -->
+    <header class="bg-emerald-700 text-white p-6 shadow-md">
+        <div class="max-w-5xl mx-auto">
+            <h1 class="text-3xl font-bold mb-2">Macromolecules Interactive Lab</h1>
+            <p class="text-emerald-100">Explore the molecular building blocks of life. Complete each model to unlock the next.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-4 space-y-8 mt-6">
+
+        <!-- ========================================== -->
+        <!-- MODEL 1: MONOMERS (CARBS, LIPIDS, PROTEINS)-->
+        <!-- ========================================== -->
+        <section id="section-1" class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden unlocked">
+            <div class="bg-emerald-100 p-4 border-b border-emerald-200 flex justify-between items-center">
+                <h2 class="text-xl font-bold text-emerald-800">Model 1: The Monomers (Building Blocks)</h2>
+                <span class="bg-emerald-600 text-white text-sm px-3 py-1 rounded-full font-bold">Step 1</span>
+            </div>
+            
+            <div class="p-6">
+                <p class="mb-4 text-gray-600"><strong>Instructions:</strong> Below are three monomer building blocks. Click on the different atoms (circles) to highlight them across all models. Observe which atoms they share.</p>
+                
+                <!-- Molecules Visuals -->
+                <div class="flex flex-col md:flex-row justify-around items-center gap-8 bg-gray-50 p-6 rounded-lg mb-6 border border-gray-200">
+                    
+                    <!-- Glucose (Simplified Chain) -->
+                    <div class="flex flex-col items-center">
+                        <h3 class="font-bold mb-4 text-blue-700">Glucose (Carbohydrate)</h3>
+                        <div class="flex flex-col items-center">
+                            <!-- Simplistic visual representation of components -->
+                            <div class="flex items-center"><div class="atom atom-H" data-type="H">H</div><div class="bond-h"></div><div class="atom atom-C" data-type="C">C</div><div class="bond-h-double"></div><div class="atom atom-O" data-type="O">O</div></div>
+                            <div class="bond-v"></div>
+                            <div class="flex items-center"><div class="atom atom-H" data-type="H">H</div><div class="bond-h"></div><div class="atom atom-C" data-type="C">C</div><div class="bond-h"></div><div class="atom atom-O" data-type="O">O</div><div class="bond-h"></div><div class="atom atom-H" data-type="H">H</div></div>
+                            <div class="bond-v"></div>
+                            <div class="flex items-center"><div class="atom atom-H" data-type="H">H</div><div class="bond-h"></div><div class="atom atom-C" data-type="C">C</div><div class="bond-h"></div><div class="atom atom-O" data-type="O">O</div><div class="bond-h"></div><div class="atom atom-H" data-type="H">H</div></div>
+                        </div>
+                    </div>
+
+                    <!-- Glycerol (Lipid part) -->
+                    <div class="flex flex-col items-center">
+                        <h3 class="font-bold mb-4 text-yellow-600">Glycerol (Lipid Backbone)</h3>
+                        <div class="flex flex-col items-center">
+                            <div class="flex items-center"><div class="atom atom-H" data-type="H">H</div><div class="bond-h"></div><div class="atom atom-C" data-type="C">C</div><div class="bond-h"></div><div class="atom atom-O" data-type="O">O</div><div class="bond-h"></div><div class="atom atom-H" data-type="H">H</div></div>
+                            <div class="bond-v"></div>
+                            <div class="flex items-center"><div class="atom atom-H" data-type="H">H</div><div class="bond-h"></div><div class="atom atom-C" data-type="C">C</div><div class="bond-h"></div><div class="atom atom-O" data-type="O">O</div><div class="bond-h"></div><div class="atom atom-H" data-type="H">H</div></div>
+                            <div class="bond-v"></div>
+                            <div class="flex items-center"><div class="atom atom-H" data-type="H">H</div><div class="bond-h"></div><div class="atom atom-C" data-type="C">C</div><div class="bond-h"></div><div class="atom atom-O" data-type="O">O</div><div class="bond-h"></div><div class="atom atom-H" data-type="H">H</div></div>
+                        </div>
+                    </div>
+
+                    <!-- Glycine (Amino Acid) -->
+                    <div class="flex flex-col items-center">
+                        <h3 class="font-bold mb-4 text-red-600">Glycine (Protein)</h3>
+                        <div class="flex items-center">
+                            <!-- Amino Group -->
+                            <div class="flex flex-col items-center">
+                                <div class="atom atom-H" data-type="H">H</div>
+                                <div class="bond-v"></div>
+                                <div class="flex items-center"><div class="atom atom-H" data-type="H">H</div><div class="bond-h"></div><div class="atom atom-N" data-type="N">N</div></div>
+                            </div>
+                            <div class="bond-h"></div>
+                            <!-- Central Carbon -->
+                            <div class="flex flex-col items-center">
+                                <div class="atom atom-H" data-type="H">H</div>
+                                <div class="bond-v"></div>
+                                <div class="atom atom-C" data-type="C">C</div>
+                                <div class="bond-v"></div>
+                                <div class="atom atom-H" data-type="H">H</div>
+                            </div>
+                            <div class="bond-h"></div>
+                            <!-- Carboxyl Group -->
+                            <div class="flex flex-col items-center">
+                                <div class="atom atom-O" data-type="O">O</div>
+                                <div class="bond-v-double"></div>
+                                <div class="flex items-center"><div class="atom atom-C" data-type="C">C</div><div class="bond-h"></div><div class="atom atom-O" data-type="O">O</div><div class="bond-h"></div><div class="atom atom-H" data-type="H">H</div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Question -->
+                <div class="bg-gray-100 p-5 rounded-lg border border-gray-200">
+                    <p class="font-bold mb-3">Based on your exploration, which atoms are found in ALL THREE types of macromolecules (Carbohydrates, Lipids, and Proteins)?</p>
+                    <p class="text-sm text-gray-500 mb-4">(Select all that apply, then check your answer)</p>
+                    
+                    <div class="flex flex-wrap gap-4 mb-4" id="m1-checkboxes">
+                        <label class="flex items-center gap-2 cursor-pointer bg-white px-4 py-2 rounded shadow-sm border border-gray-300 hover:bg-gray-50">
+                            <input type="checkbox" value="C" class="w-5 h-5 text-emerald-600"> Carbon (C)
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer bg-white px-4 py-2 rounded shadow-sm border border-gray-300 hover:bg-gray-50">
+                            <input type="checkbox" value="H" class="w-5 h-5 text-emerald-600"> Hydrogen (H)
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer bg-white px-4 py-2 rounded shadow-sm border border-gray-300 hover:bg-gray-50">
+                            <input type="checkbox" value="O" class="w-5 h-5 text-emerald-600"> Oxygen (O)
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer bg-white px-4 py-2 rounded shadow-sm border border-gray-300 hover:bg-gray-50">
+                            <input type="checkbox" value="N" class="w-5 h-5 text-emerald-600"> Nitrogen (N)
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer bg-white px-4 py-2 rounded shadow-sm border border-gray-300 hover:bg-gray-50">
+                            <input type="checkbox" value="P" class="w-5 h-5 text-emerald-600"> Phosphorus (P)
+                        </label>
+                    </div>
+                    <button onclick="checkModel1()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-6 rounded transition-colors">Check Answer</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- MODEL 2: CARBOHYDRATE HYDROLYSIS           -->
+        <!-- ========================================== -->
+        <section id="section-2" class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden locked">
+            <div class="bg-blue-100 p-4 border-b border-blue-200 flex justify-between items-center">
+                <h2 class="text-xl font-bold text-blue-800">Model 2: Elephant's Diet - Carbohydrates</h2>
+                <span class="bg-blue-600 text-white text-sm px-3 py-1 rounded-full font-bold">Step 2</span>
+            </div>
+            <div class="p-6">
+                <p class="mb-4 text-gray-600"><strong>Instructions:</strong> Sucrose is a complex sugar. To digest it (Hydrolysis), your body uses water to break the bond. <strong>Drag the Water (H₂O) molecule directly onto the red oxygen bond between the sugars to break it.</strong> Once broken, try removing the water to put them back together (Dehydration Synthesis)!</p>
+
+                <!-- Interactive Arena -->
+                <div class="relative bg-blue-50 border-2 border-dashed border-blue-200 rounded-xl p-8 flex flex-col items-center justify-center min-h-[400px]">
+                    
+                    <!-- Draggable Water -->
+                    <div id="water-molecule" class="draggable absolute top-6 right-6 bg-blue-400 text-white font-bold w-16 h-16 rounded-full flex items-center justify-center shadow-lg border-2 border-white text-lg z-50">
+                        H₂O
+                    </div>
+                    <p id="water-hint" class="absolute top-24 right-6 text-sm text-blue-600 font-bold animate-pulse">Drag me! &larr;</p>
+
+                    <!-- Rebuild Button (Hidden initially) -->
+                    <button id="btn-rebuild" onclick="rebuildSucrose()" class="hidden absolute top-6 right-6 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded shadow-lg transition-colors z-50">
+                        Remove Water (Synthesize)
+                    </button>
+
+                    <!-- Sucrose Complex -->
+                    <div id="sucrose-complex" class="flex items-center transition-all duration-700 ease-in-out relative mt-16 mb-12">
+                        
+                        <!-- Glucose (Detailed Hexagon SVG) -->
+                        <div id="m2-glucose" class="relative transition-transform duration-700 z-10 flex flex-col items-center">
+                            <svg width="180" height="150" viewBox="0 0 200 160" class="drop-shadow-md overflow-visible">
+                                <!-- Glucose Ring -->
+                                <polygon points="50,50 110,50 140,100 110,150 50,150 20,100" fill="#f8fafc" stroke="#1e293b" stroke-width="3"/>
+                                <!-- Oxygen in ring -->
+                                <circle cx="125" cy="75" r="14" fill="#f8fafc" />
+                                <text x="125" y="82" text-anchor="middle" font-weight="bold" font-size="20" fill="#ef4444">O</text>
+                                
+                                <!-- Side Groups -->
+                                <!-- C6 -->
+                                <line x1="50" y1="50" x2="30" y2="20" stroke="#1e293b" stroke-width="2"/>
+                                <text x="25" y="15" text-anchor="middle" font-size="16" fill="#1e293b">CH₂OH</text>
+                                <!-- C4 OH -->
+                                <line x1="20" y1="100" x2="5" y2="100" stroke="#1e293b" stroke-width="2"/>
+                                <text x="-5" y="105" text-anchor="end" font-size="16" fill="#1e293b">HO</text>
+                                <!-- C3 OH -->
+                                <line x1="50" y1="150" x2="50" y2="170" stroke="#1e293b" stroke-width="2"/>
+                                <text x="50" y="188" text-anchor="middle" font-size="16" fill="#1e293b">OH</text>
+                                <!-- C2 OH -->
+                                <line x1="110" y1="150" x2="110" y2="170" stroke="#1e293b" stroke-width="2"/>
+                                <text x="110" y="188" text-anchor="middle" font-size="16" fill="#1e293b">OH</text>
+                                
+                                <!-- H atoms -->
+                                <text x="55" y="65" font-size="14" fill="#64748b">H</text>
+                                <text x="35" y="105" font-size="14" fill="#64748b">H</text>
+                                <text x="65" y="140" font-size="14" fill="#64748b">H</text>
+                                <text x="125" y="140" font-size="14" fill="#64748b">H</text>
+                            </svg>
+                            <span id="gluco-oh" class="absolute right-[-10px] top-[60%] font-bold text-blue-600 bg-white px-1 opacity-0 transition-opacity duration-300">OH</span>
+                            <div id="label-glucose" class="mt-8 font-bold text-gray-700 text-lg opacity-0 transition-opacity duration-300">Glucose</div>
+                        </div>
+                        
+                        <!-- Bond Area (Drop Target) -->
+                        <div id="bond-target" class="w-16 h-1 bg-gray-800 relative flex items-center justify-center transition-all duration-700 -mx-4 z-0 mt-8">
+                            <div class="w-10 h-10 bg-white rounded-full absolute flex items-center justify-center font-bold text-red-500 z-0 text-xl">
+                                O
+                            </div>
+                        </div>
+
+                        <!-- Fructose (Detailed Pentagon SVG) -->
+                        <div id="m2-fructose" class="relative transition-transform duration-700 z-10 flex flex-col items-center">
+                            <svg width="160" height="150" viewBox="0 0 180 160" class="drop-shadow-md overflow-visible">
+                                <!-- Fructose Ring -->
+                                <polygon points="90,60 140,95 120,150 60,150 40,95" fill="#f8fafc" stroke="#1e293b" stroke-width="3"/>
+                                <!-- Oxygen in ring -->
+                                <circle cx="90" cy="60" r="14" fill="#f8fafc" />
+                                <text x="90" y="67" text-anchor="middle" font-weight="bold" font-size="20" fill="#ef4444">O</text>
+
+                                <!-- Side Groups -->
+                                <!-- C1 (Left) -->
+                                <line x1="40" y1="95" x2="15" y2="70" stroke="#1e293b" stroke-width="2"/>
+                                <text x="10" y="65" text-anchor="middle" font-size="16" fill="#1e293b">CH₂OH</text>
+                                <!-- C6 (Right) -->
+                                <line x1="140" y1="95" x2="165" y2="70" stroke="#1e293b" stroke-width="2"/>
+                                <text x="170" y="65" text-anchor="middle" font-size="16" fill="#1e293b">CH₂OH</text>
+                                <!-- C4 OH -->
+                                <line x1="120" y1="150" x2="135" y2="170" stroke="#1e293b" stroke-width="2"/>
+                                <text x="140" y="188" text-anchor="middle" font-size="16" fill="#1e293b">OH</text>
+                                <!-- C3 OH -->
+                                <line x1="60" y1="150" x2="45" y2="170" stroke="#1e293b" stroke-width="2"/>
+                                <text x="40" y="188" text-anchor="middle" font-size="16" fill="#1e293b">OH</text>
+
+                                <!-- H atoms -->
+                                <text x="120" y="130" font-size="14" fill="#64748b">H</text>
+                                <text x="60" y="130" font-size="14" fill="#64748b">H</text>
+                                <text x="55" y="105" font-size="14" fill="#64748b">H</text>
+                            </svg>
+                            <span id="fructo-h" class="absolute left-[-5px] top-[60%] font-bold text-blue-600 bg-white px-1 opacity-0 transition-opacity duration-300">H</span>
+                            <div id="label-fructose" class="mt-8 font-bold text-gray-700 text-lg opacity-0 transition-opacity duration-300">Fructose</div>
+                        </div>
+
+                        <!-- Sucrose Label -->
+                        <div id="label-sucrose" class="absolute -bottom-10 left-1/2 transform -translate-x-1/2 font-bold text-purple-800 text-2xl transition-opacity duration-300">Sucrose</div>
+                    </div>
+                </div>
+
+                <!-- Questions Area -->
+                <div id="m2-questions" class="mt-8 w-full bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
+                    <h3 class="font-bold text-lg mb-4 text-gray-800">Check Your Understanding</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-gray-50 p-4 rounded border border-gray-200">
+                            <p class="font-bold mb-2 text-blue-800">1. Hydrolysis (Breaking down)</p>
+                            <label class="block text-sm mb-1">Reactants (What you start with):</label>
+                            <select id="m2-q1-reactants" class="w-full mb-3 p-2 border rounded">
+                                <option value="">Select...</option>
+                                <option value="correct">Sucrose + H2O</option>
+                                <option value="wrong1">Glucose + Fructose</option>
+                                <option value="wrong2">Sucrose only</option>
+                            </select>
+                            
+                            <label class="block text-sm mb-1">Products (What you end up with):</label>
+                            <select id="m2-q1-products" class="w-full p-2 border rounded">
+                                <option value="">Select...</option>
+                                <option value="wrong1">Sucrose + H2O</option>
+                                <option value="correct">Glucose + Fructose</option>
+                                <option value="wrong2">Fructose + H2O</option>
+                            </select>
+                        </div>
+
+                        <div class="bg-gray-50 p-4 rounded border border-gray-200">
+                            <p class="font-bold mb-2 text-purple-800">2. Dehydration Synthesis (Building)</p>
+                            <label class="block text-sm mb-1">Reactants (What you start with):</label>
+                            <select id="m2-q2-reactants" class="w-full mb-3 p-2 border rounded">
+                                <option value="">Select...</option>
+                                <option value="wrong1">Sucrose + H2O</option>
+                                <option value="correct">Glucose + Fructose</option>
+                                <option value="wrong2">Glucose + H2O</option>
+                            </select>
+                            
+                            <label class="block text-sm mb-1">Products (What you end up with):</label>
+                            <select id="m2-q2-products" class="w-full p-2 border rounded">
+                                <option value="">Select...</option>
+                                <option value="correct">Sucrose + H2O</option>
+                                <option value="wrong1">Glucose + Fructose</option>
+                                <option value="wrong2">Sucrose only</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <button onclick="checkModel2()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded transition-colors">Check Answers</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- MODEL 3: PROTEIN SYNTHESIS                 -->
+        <!-- ========================================== -->
+        <section id="section-3" class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden locked">
+            <div class="bg-purple-100 p-4 border-b border-purple-200 flex justify-between items-center">
+                <h2 class="text-xl font-bold text-purple-800">Model 3: Lion's Diet - Proteins</h2>
+                <span class="bg-purple-600 text-white text-sm px-3 py-1 rounded-full font-bold">Step 3</span>
+            </div>
+            <div class="p-6">
+                <p class="mb-4 text-gray-600"><strong>Instructions:</strong> Proteins are made of varying sequences of Amino Acids. Below is a pool of amino acids (with different 'R' groups represented by colors/shapes). <strong>Drag them into the Assembly Zones to build TWO DIFFERENT protein chains, each exactly 4 amino acids long.</strong></p>
+
+                <!-- Draggable Amino Acids Pool -->
+                <div class="bg-gray-100 p-4 rounded-lg border border-gray-300 mb-6">
+                    <h3 class="font-bold text-center mb-3 text-gray-600">Amino Acid Pool</h3>
+                    <div class="flex flex-wrap justify-center gap-4" id="aa-pool">
+                        <!-- We create multiple instances to allow building chains -->
+                        <!-- AA Type 1 (Red Square R-Group) -->
+                        <div id="aa-1-1" class="draggable aa-block" data-type="A">
+                            <div class="flex flex-col items-center">
+                                <div class="w-6 h-6 bg-red-500 rounded-sm mb-1"></div>
+                                <div class="bg-white border border-gray-400 px-2 py-1 text-xs font-bold rounded">H₂N-CH-COOH</div>
+                            </div>
+                        </div>
+                        <div id="aa-1-2" class="draggable aa-block" data-type="A"><div class="flex flex-col items-center"><div class="w-6 h-6 bg-red-500 rounded-sm mb-1"></div><div class="bg-white border border-gray-400 px-2 py-1 text-xs font-bold rounded">H₂N-CH-COOH</div></div></div>
+                        <div id="aa-1-3" class="draggable aa-block" data-type="A"><div class="flex flex-col items-center"><div class="w-6 h-6 bg-red-500 rounded-sm mb-1"></div><div class="bg-white border border-gray-400 px-2 py-1 text-xs font-bold rounded">H₂N-CH-COOH</div></div></div>
+
+                        <!-- AA Type 2 (Blue Circle R-Group) -->
+                        <div id="aa-2-1" class="draggable aa-block" data-type="B">
+                            <div class="flex flex-col items-center">
+                                <div class="w-6 h-6 bg-blue-500 rounded-full mb-1"></div>
+                                <div class="bg-white border border-gray-400 px-2 py-1 text-xs font-bold rounded">H₂N-CH-COOH</div>
+                            </div>
+                        </div>
+                        <div id="aa-2-2" class="draggable aa-block" data-type="B"><div class="flex flex-col items-center"><div class="w-6 h-6 bg-blue-500 rounded-full mb-1"></div><div class="bg-white border border-gray-400 px-2 py-1 text-xs font-bold rounded">H₂N-CH-COOH</div></div></div>
+                        <div id="aa-2-3" class="draggable aa-block" data-type="B"><div class="flex flex-col items-center"><div class="w-6 h-6 bg-blue-500 rounded-full mb-1"></div><div class="bg-white border border-gray-400 px-2 py-1 text-xs font-bold rounded">H₂N-CH-COOH</div></div></div>
+
+                        <!-- AA Type 3 (Yellow Triangle R-Group) -->
+                        <div id="aa-3-1" class="draggable aa-block" data-type="C">
+                            <div class="flex flex-col items-center">
+                                <div class="w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-b-[24px] border-b-yellow-400 mb-1"></div>
+                                <div class="bg-white border border-gray-400 px-2 py-1 text-xs font-bold rounded">H₂N-CH-COOH</div>
+                            </div>
+                        </div>
+                        <div id="aa-3-2" class="draggable aa-block" data-type="C"><div class="flex flex-col items-center"><div class="w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-b-[24px] border-b-yellow-400 mb-1"></div><div class="bg-white border border-gray-400 px-2 py-1 text-xs font-bold rounded">H₂N-CH-COOH</div></div></div>
+                        <div id="aa-3-3" class="draggable aa-block" data-type="C"><div class="flex flex-col items-center"><div class="w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-b-[24px] border-b-yellow-400 mb-1"></div><div class="bg-white border border-gray-400 px-2 py-1 text-xs font-bold rounded">H₂N-CH-COOH</div></div></div>
+                    </div>
+                </div>
+
+                <!-- Assembly Zones -->
+                <div class="space-y-4">
+                    <div id="assembly-zone-1" class="w-full min-h-[100px] border-4 border-dashed border-purple-300 bg-purple-50 rounded-xl relative flex items-center p-2 overflow-x-auto">
+                        <span class="text-purple-400 font-bold absolute left-4 z-0 pointer-events-none opacity-50">Protein Chain 1 (Drop 4 AAs here)</span>
+                        <div id="chain-1" class="flex items-center gap-1 relative z-10 w-full"></div>
+                    </div>
+
+                    <div id="assembly-zone-2" class="w-full min-h-[100px] border-4 border-dashed border-indigo-300 bg-indigo-50 rounded-xl relative flex items-center p-2 overflow-x-auto">
+                        <span class="text-indigo-400 font-bold absolute left-4 z-0 pointer-events-none opacity-50">Protein Chain 2 (Drop 4 AAs here)</span>
+                        <div id="chain-2" class="flex items-center gap-1 relative z-10 w-full"></div>
+                    </div>
+                </div>
+
+                <div class="mt-6 text-center">
+                    <button onclick="checkModel3()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded shadow-md transition-colors text-lg">Check Proteins</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Custom Message Box Modal -->
+    <div id="msg-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-[100] hidden">
+        <div class="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4 transform transition-all">
+            <h2 id="msg-title" class="text-2xl font-bold mb-2 text-gray-800">Title</h2>
+            <p id="msg-text" class="text-gray-600 mb-6">Message goes here.</p>
+            <button onclick="closeModal()" id="msg-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded transition-colors">Continue</button>
+        </div>
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+        // ==========================================
+        // UTILITY: Custom Message Modal (No Alerts)
+        // ==========================================
+        let modalCallback = null;
+        function showMessage(title, text, type = "success", callback = null) {
+            document.getElementById('msg-title').innerText = title;
+            document.getElementById('msg-text').innerText = text;
+            
+            const btn = document.getElementById('msg-btn');
+            if(type === "error") {
+                document.getElementById('msg-title').classList.replace('text-gray-800', 'text-red-600');
+                btn.classList.replace('bg-emerald-600', 'bg-red-600');
+                btn.classList.replace('hover:bg-emerald-700', 'hover:bg-red-700');
+                btn.innerText = "Try Again";
+            } else {
+                document.getElementById('msg-title').classList.replace('text-red-600', 'text-gray-800');
+                document.getElementById('msg-title').classList.add(type === 'success' ? 'text-emerald-600' : 'text-blue-600');
+                btn.classList.replace('bg-red-600', 'bg-emerald-600');
+                btn.classList.replace('hover:bg-red-700', 'hover:bg-emerald-700');
+                btn.innerText = "Continue";
+            }
+
+            modalCallback = callback;
+            document.getElementById('msg-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('msg-modal').classList.add('hidden');
+            if (modalCallback) modalCallback();
+        }
+
+        // ==========================================
+        // MODEL 1 LOGIC
+        // ==========================================
+        // MODEL 1 LOGIC: Atom Highlighting & Check
+        // ==========================================
+        document.querySelectorAll('.atom').forEach(atom => {
+            atom.addEventListener('click', (e) => {
+                const type = e.currentTarget.getAttribute('data-type');
+                
+                // Remove highlights from all
+                document.querySelectorAll('.atom').forEach(a => {
+                    a.classList.remove('highlighted');
+                });
+                
+                // Add highlight to matching elements
+                document.querySelectorAll(`.atom[data-type="${type}"]`).forEach(a => {
+                    a.classList.add('highlighted');
+                });
+            });
+        });
+
+        function checkModel1() {
+            const checked = Array.from(document.querySelectorAll('#m1-checkboxes input:checked')).map(cb => cb.value);
+            
+            // Correct answers: C, H, O. Incorrect: N, P.
+            const hasC = checked.includes('C');
+            const hasH = checked.includes('H');
+            const hasO = checked.includes('O');
+            const hasN = checked.includes('N');
+            const hasP = checked.includes('P');
+
+            if (hasC && hasH && hasO && !hasN && !hasP && checked.length === 3) {
+                showMessage("Correct!", "Excellent observation. Carbon, Hydrogen, and Oxygen form the foundational structure of all macromolecules. Nitrogen is only found in proteins and nucleic acids.", "success", () => {
+                    unlockSection(2);
+                });
+            } else if (hasN) {
+                showMessage("Not quite.", "Take another look at the models. Is Nitrogen (blue) present in the Carbohydrate or Lipid?", "error");
+            } else if (checked.length < 3) {
+                showMessage("Incomplete", "You missed some! There are THREE atoms that are shared across all of them.", "error");
+            } else {
+                showMessage("Try Again", "Review the highlighted atoms when you click on them.", "error");
+            }
+        }
+
+        // ==========================================
+        // UTILITY: Custom Pointer Drag Logic (Touch & Mouse)
+        // ==========================================
+        function makeDraggable(elementId, dropZoneIds, onDropSuccess) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            
+            // Allow multiple drop zones
+            const dropZones = Array.isArray(dropZoneIds) ? dropZoneIds.map(id => document.getElementById(id)) : [document.getElementById(dropZoneIds)];
+            
+            let isDragging = false;
+            let startX, startY;
+            let initialX = 0, initialY = 0;
+
+            el.addEventListener('pointerdown', (e) => {
+                isDragging = true;
+                el.setPointerCapture(e.pointerId);
+                
+                startX = e.clientX - initialX;
+                startY = e.clientY - initialY;
+                
+                el.style.zIndex = 1000;
+                el.style.transition = 'none';
+                e.preventDefault();
+            });
+
+            el.addEventListener('pointermove', (e) => {
+                if (!isDragging) return;
+                
+                const currentX = e.clientX - startX;
+                const currentY = e.clientY - startY;
+                
+                initialX = currentX;
+                initialY = currentY;
+                
+                el.style.transform = `translate(${currentX}px, ${currentY}px)`;
+            });
+
+            el.addEventListener('pointerup', (e) => {
+                if (!isDragging) return;
+                isDragging = false;
+                el.releasePointerCapture(e.pointerId);
+                el.style.zIndex = '50';
+                el.style.transition = 'transform 0.3s ease-out';
+                
+                const rect1 = el.getBoundingClientRect();
+                let droppedInZone = null;
+
+                for (let zone of dropZones) {
+                    if (!zone) continue;
+                    const rect2 = zone.getBoundingClientRect();
+                    const overlap = !(rect1.right < rect2.left || 
+                                      rect1.left > rect2.right || 
+                                      rect1.bottom < rect2.top || 
+                                      rect1.top > rect2.bottom);
+                    if (overlap) {
+                        droppedInZone = zone;
+                        break;
+                    }
+                }
+
+                if (droppedInZone) {
+                    onDropSuccess(el, droppedInZone);
+                } else {
+                    initialX = 0;
+                    initialY = 0;
+                    el.style.transform = 'translate(0px, 0px)';
+                }
+            });
+        }
+
+        // ==========================================
+        // MODEL 2 LOGIC: Hydrolysis & Dehydration
+        // ==========================================
+        let isBroken = false;
+        
+        makeDraggable('water-molecule', 'bond-target', (waterEl) => {
+            if(isBroken) return;
+            isBroken = true;
+            
+            // Hide water and hint
+            waterEl.style.display = 'none';
+            document.getElementById('water-hint').style.display = 'none';
+            
+            // Break the bond visually (collapse width to 0)
+            document.getElementById('bond-target').style.width = '0px';
+            document.getElementById('bond-target').style.opacity = '0';
+            document.getElementById('bond-target').style.margin = '0px';
+            
+            // Separate Glucose and Fructose (push them apart to account for collapsed flex container)
+            document.getElementById('m2-glucose').style.transform = 'translateX(-50px)';
+            document.getElementById('m2-fructose').style.transform = 'translateX(50px)';
+            
+            // Show OH and H
+            setTimeout(() => {
+                document.getElementById('gluco-oh').style.opacity = '1';
+                document.getElementById('fructo-h').style.opacity = '1';
+                
+                // Toggle Labels
+                document.getElementById('label-sucrose').style.opacity = '0';
+                document.getElementById('label-glucose').style.opacity = '1';
+                document.getElementById('label-fructose').style.opacity = '1';
+                
+                // Show rebuild button
+                document.getElementById('btn-rebuild').classList.remove('hidden');
+            }, 500);
+        });
+
+        function rebuildSucrose() {
+            isBroken = false;
+            document.getElementById('btn-rebuild').classList.add('hidden');
+            
+            // Hide OH and H
+            document.getElementById('gluco-oh').style.opacity = '0';
+            document.getElementById('fructo-h').style.opacity = '0';
+            
+            // Toggle Labels
+            document.getElementById('label-sucrose').style.opacity = '1';
+            document.getElementById('label-glucose').style.opacity = '0';
+            document.getElementById('label-fructose').style.opacity = '0';
+            
+            // Bring together
+            document.getElementById('m2-glucose').style.transform = 'translateX(0px)';
+            document.getElementById('m2-fructose').style.transform = 'translateX(0px)';
+            
+            // Restore bond
+            setTimeout(() => {
+                document.getElementById('bond-target').style.width = '4rem';
+                document.getElementById('bond-target').style.margin = '-1rem';
+                document.getElementById('bond-target').style.opacity = '1';
+                
+                // Release water visually
+                const waterEl = document.getElementById('water-molecule');
+                waterEl.style.display = 'flex';
+                waterEl.style.transform = 'translate(0px, 0px)'; // Reset position
+                waterEl.classList.add('animate-float-away');
+                
+                setTimeout(() => {
+                    waterEl.classList.remove('animate-float-away');
+                    waterEl.style.display = 'flex';
+                }, 1500);
+                
+            }, 700);
+        }
+
+        function checkModel2() {
+            const q1r = document.getElementById('m2-q1-reactants').value;
+            const q1p = document.getElementById('m2-q1-products').value;
+            const q2r = document.getElementById('m2-q2-reactants').value;
+            const q2p = document.getElementById('m2-q2-products').value;
+
+            if (!q1r || !q1p || !q2r || !q2p) {
+                showMessage("Incomplete", "Please answer all dropdown questions before checking.", "error");
+                return;
+            }
+
+            if (q1r === 'correct' && q1p === 'correct' && q2r === 'correct' && q2p === 'correct') {
+                showMessage("Correct!", "Great job! Hydrolysis uses water to break polymers into monomers. Dehydration synthesis combines monomers and releases water.", "success", () => {
+                    unlockSection(3);
+                });
+            } else {
+                showMessage("Review your answers", "Remember:\n- Hydrolysis (Breaking): Reactants include water.\n- Dehydration (Building): Products include water.", "error");
+            }
+        }
+
+
+        // ==========================================
+        // MODEL 3 LOGIC: Protein Building
+        // ==========================================
+        
+        // Setup all amino acids to be draggable into either assembly zone
+        const aaElements = document.querySelectorAll('.aa-block');
+        aaElements.forEach(el => {
+            makeDraggable(el.id, ['assembly-zone-1', 'assembly-zone-2'], (draggedEl, targetZone) => {
+                
+                const chainContainer = targetZone.querySelector('div[id^="chain-"]');
+                
+                // Check if chain already has 4 AAs (including bonds)
+                const currentAAs = chainContainer.querySelectorAll('.aa-block').length;
+                if (currentAAs >= 4) {
+                    // Reset position if full
+                    draggedEl.style.transform = 'translate(0px, 0px)';
+                    showMessage("Chain Full", "This protein chain already has 4 amino acids.", "error");
+                    return;
+                }
+
+                // Remove pointer events and styling so it sits in the chain
+                draggedEl.style.pointerEvents = 'none';
+                draggedEl.classList.remove('draggable');
+                draggedEl.style.transform = 'none';
+                draggedEl.style.position = 'relative';
+
+                // If not the first element, add a peptide bond
+                if (currentAAs > 0) {
+                    const bond = document.createElement('div');
+                    bond.className = 'w-4 h-1 bg-gray-800 shrink-0 mx-1';
+                    chainContainer.appendChild(bond);
+                    releaseWaterAnimation(chainContainer);
+                }
+
+                chainContainer.appendChild(draggedEl);
+            });
+        });
+
+        function releaseWaterAnimation(container) {
+            const waterPopup = document.createElement('div');
+            waterPopup.innerText = 'H₂O';
+            waterPopup.className = 'absolute font-bold text-blue-500 bg-blue-100 rounded-full w-10 h-10 flex items-center justify-center border border-blue-300 animate-float-away pointer-events-none shadow-sm z-50';
+            waterPopup.style.right = '10px';
+            waterPopup.style.top = '-10px';
+            container.appendChild(waterPopup);
+            
+            setTimeout(() => {
+                if(waterPopup.parentNode) waterPopup.parentNode.removeChild(waterPopup);
+            }, 1500);
+        }
+
+        function getChainSequence(chainId) {
+            const container = document.getElementById(chainId);
+            const blocks = container.querySelectorAll('.aa-block');
+            return Array.from(blocks).map(b => b.getAttribute('data-type')).join('-');
+        }
+
+        function checkModel3() {
+            const seq1 = getChainSequence('chain-1');
+            const seq2 = getChainSequence('chain-2');
+
+            const len1 = seq1 ? seq1.split('-').length : 0;
+            const len2 = seq2 ? seq2.split('-').length : 0;
+
+            if (len1 < 4 || len2 < 4) {
+                showMessage("Incomplete", "Make sure BOTH protein chains have exactly 4 amino acids.", "error");
+                return;
+            }
+
+            if (seq1 === seq2) {
+                showMessage("Too Similar", "You built the exact same protein twice! The order of amino acids determines the protein's function. Try making them different.", "error");
+                return;
+            }
+
+            showMessage("Lab Complete!", "Outstanding! You built two distinct polypeptide chains. The specific sequence of amino acids (determined by DNA) dictates how a protein folds and what job it does in the body.", "success");
+        }
+
+        // ==========================================
+        // UI Navigation Control
+        // ==========================================
+        function unlockSection(num) {
+            const sec = document.getElementById(`section-${num}`);
+            if(sec) {
+                sec.classList.remove('locked');
+                sec.classList.add('unlocked');
+                // Small delay for visual flow
+                setTimeout(() => {
+                    sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 300);
+            }
+        }
+
+        // Prevent default drag behaviors that interfere with our custom pointer logic
+        document.addEventListener('dragstart', e => e.preventDefault());
+    </script>
+</body>
+</html>
